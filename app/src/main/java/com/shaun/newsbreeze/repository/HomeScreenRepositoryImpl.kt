@@ -1,11 +1,14 @@
 package com.shaun.newsbreeze.repository
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.shaun.newsbreeze.localdatabase.ArticleDao
+import com.shaun.newsbreeze.localdatabase.ArticleLocal
 import com.shaun.newsbreeze.models.NewsArticles
 import com.shaun.newsbreeze.network.NewsApiService
 
 class HomeScreenRepositoryImpl(
-    val apiKey: String, val retrofit: NewsApiService,
+    val apiKey: String, val retrofit: NewsApiService, private val articleDao: ArticleDao,
 ) : HomeScreenRepository {
 
     override var searchFailed = MutableLiveData(false)
@@ -18,6 +21,14 @@ class HomeScreenRepositoryImpl(
 
     override suspend fun searchArticle(query: String): NewsArticles {
         return retrofit.searchArticles(query = query, apiKey = apiKey)
+    }
+
+    override fun getArticle(): LiveData<List<ArticleLocal>> {
+        return articleDao.observeArticles()
+    }
+
+    override suspend fun insertArticle(article: ArticleLocal) {
+        articleDao.insertArticle(article)
     }
 
     companion object {

@@ -35,7 +35,7 @@ fun SearchBar(
     viewModel: HomeViewModel,
     onExecuteSearch: (String) -> Unit = {},
 ) {
-    val inputvalue: String? by viewModel._searchStringLiveData.observeAsState(initial = "")
+    val inputvalue: String? by viewModel.searchStringLiveData.observeAsState(initial = "")
 
 
     val focusManager = LocalFocusManager.current

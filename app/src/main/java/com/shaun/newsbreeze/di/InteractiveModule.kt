@@ -1,5 +1,6 @@
 package com.shaun.newsbreeze.di
 
+import com.shaun.newsbreeze.localdatabase.ArticleDao
 import com.shaun.newsbreeze.network.NewsApiService
 import com.shaun.newsbreeze.repository.HomeScreenRepository
 import com.shaun.newsbreeze.repository.HomeScreenRepositoryImpl
@@ -15,7 +16,7 @@ object InteractiveModule {
     @Provides
     @Singleton
 
-    fun provideRepository(apiKey: String, retrofit: NewsApiService):HomeScreenRepository {
-        return HomeScreenRepositoryImpl(apiKey = apiKey, retrofit = retrofit)
+    fun provideRepository(apiKey: String, retrofit: NewsApiService,dao: ArticleDao):HomeScreenRepository {
+        return HomeScreenRepositoryImpl(apiKey = apiKey, retrofit = retrofit,dao)
     }
 }

@@ -9,7 +9,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -38,6 +38,10 @@ fun HomeNewsItem(
     onReadClick: () -> Unit = {},
     onSaveClick: () -> Unit = {}
 ) {
+
+    var saved by remember {
+        mutableStateOf(false)
+    }
 
     if (title.isEmpty() || shortDescription.isNullOrEmpty())
         return
@@ -133,7 +137,9 @@ fun HomeNewsItem(
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_not_saved),
+                                painter = if (isSaved) painterResource(id = R.drawable.ic_saved) else painterResource(
+                                    id = R.drawable.ic_not_saved
+                                ),
                                 contentDescription = "",
                                 alignment = Alignment.TopCenter,
                                 modifier = Modifier
@@ -177,6 +183,7 @@ fun HomeNewsItem(
                 })
                 Spacer(modifier = Modifier.width(40.dp))
                 BreezeButton(title = "Save", onClick = {
+                    saved = true
                     onSaveClick()
                 })
             }

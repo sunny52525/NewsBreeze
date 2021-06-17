@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shaun.newsbreeze.localdatabase.ArticleLocal
 import com.shaun.newsbreeze.models.NewsArticles
 import com.shaun.newsbreeze.repository.HomeScreenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,9 +16,9 @@ class HomeViewModel @Inject constructor(
     private val repository: HomeScreenRepository
 ) : ViewModel() {
 
-    val _searchStringLiveData = MutableLiveData("")
+    val searchStringLiveData = MutableLiveData("")
 
-
+    val savedArticles = repository.getArticle()
     val newsArticles = MutableLiveData<NewsArticles>()
 
     val searchQuery = MutableLiveData("")
@@ -31,7 +32,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val result = repository.getHeadlines()
                 newsArticles.postValue(result)
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 Log.d("TAG", "$e: ")
             }
             isInSearchMode.postValue(false)
@@ -40,7 +41,7 @@ class HomeViewModel @Inject constructor(
 
 
     fun onQuery(query: String) {
-        _searchStringLiveData.postValue(query)
+        searchStringLiveData.postValue(query)
 
     }
 
@@ -54,20 +55,27 @@ class HomeViewModel @Inject constructor(
 
         resetSearchState()
         viewModelScope.launch {
-           try {
+            try {
 
-               val result = repository.searchArticle(query = query)
+                val result = repository.searchArticle(query = query)
 
-               if (result.totalResults == 0) {
-                   searchFailed.postValue(true)
-               } else
-                   searchFailed.postValue(false)
+                if (result.totalResults == 0) {
+                    searchFailed.postValue(true)
+                } else
+                    searchFailed.postValue(false)
 
-               newsArticles.postValue(result)
-           }catch (e:Exception){
-               Log.d("TAG", "searchNews: $e")
-           }
+                newsArticles.postValue(result)
+            } catch (e: Exception) {
+                Log.d("TAG", "searchNews: $e")
+            }
             isInSearchMode.postValue(false)
         }
     }
+
+
+    fun insertArticle(articleLocal: ArticleLocal) = viewModelScope.launch {
+        repository.insertArticle(articleLocal)
+    }
+
+
 }

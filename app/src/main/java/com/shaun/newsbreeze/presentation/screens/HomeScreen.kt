@@ -17,6 +17,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.shaun.newsbreeze.localdatabase.ArticleLocal
 import com.shaun.newsbreeze.models.Article
 import com.shaun.newsbreeze.models.NewsArticles
 import com.shaun.newsbreeze.presentation.components.*
@@ -36,6 +37,7 @@ fun HomeScreen(
 
     val topHeadlines: NewsArticles? by homeViewModel.newsArticles.observeAsState(NewsArticles())
 
+    val savedArticles: List<ArticleLocal>? by homeViewModel.savedArticles.observeAsState()
     val noItemsFound: Boolean by homeViewModel.searchFailed.observeAsState(false)
 
     val isLoading: Boolean by homeViewModel.isInSearchMode.observeAsState(initial = true)
@@ -84,7 +86,24 @@ fun HomeScreen(
                                 date = item.publishedAt.substring(0, 10),
                                 onReadClick = {
                                     onReadClicked(item)
-                                }
+                                },
+                                onSaveClick = {
+                                    homeViewModel.insertArticle(
+                                        articleLocal = ArticleLocal(
+                                            source = item.source,
+                                            author = item.author,
+                                            title = item.title,
+                                            description = item.description,
+                                            url = item.url,
+                                            urlToImage = item.urlToImage,
+                                            publishedAt = item.publishedAt, content = item.content,
+
+                                            )
+                                    )
+                                },
+                                isSaved = savedArticles?.filter {
+                                    it.title == item.title
+                                }?.isEmpty() == false
                             )
                         }
 
@@ -97,7 +116,7 @@ fun HomeScreen(
                 Column {
                     repeat(4) {
                         EnterAnimation {
-                           ShimmerItem()
+                            ShimmerItem()
                         }
 
                     }
