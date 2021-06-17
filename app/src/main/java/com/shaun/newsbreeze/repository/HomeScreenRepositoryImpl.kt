@@ -27,6 +27,10 @@ class HomeScreenRepositoryImpl(
         return articleDao.observeArticles()
     }
 
+    override suspend fun deleteArticle(article: String) {
+        articleDao.deleteArticle(  article)
+    }
+
     override suspend fun insertArticle(article: ArticleLocal) {
         articleDao.insertArticle(article)
     }

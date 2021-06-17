@@ -12,6 +12,7 @@ interface HomeScreenRepository {
     suspend fun searchArticle(query: String): NewsArticles
 
     fun getArticle() : LiveData<List<ArticleLocal>>
+    suspend fun deleteArticle(article: String)
     suspend fun insertArticle(article : ArticleLocal)
 
 }

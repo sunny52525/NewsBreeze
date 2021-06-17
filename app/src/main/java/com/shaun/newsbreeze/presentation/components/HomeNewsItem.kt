@@ -36,7 +36,8 @@ fun HomeNewsItem(
     date: String = "29-03-01",
     isSaved: Boolean = false,
     onReadClick: () -> Unit = {},
-    onSaveClick: () -> Unit = {}
+    onSaveClick: () -> Unit = {},
+    onDelete: () -> Unit = {}
 ) {
 
     var saved by remember {
@@ -123,7 +124,7 @@ fun HomeNewsItem(
 
                 Column(Modifier.padding(top = 10.dp, end = 20.dp)) {
                     Card(
-                        onClick = { onSaveClick() },
+                        onClick = { if (isSaved) onDelete() else onSaveClick() },
                         modifier = Modifier
                             .size(30.dp),
                         shape = RoundedCornerShape(10),
@@ -183,8 +184,10 @@ fun HomeNewsItem(
                 })
                 Spacer(modifier = Modifier.width(40.dp))
                 BreezeButton(title = "Save", onClick = {
-                    saved = true
-                    onSaveClick()
+                    if (isSaved) {
+                        onDelete()
+                    } else
+                        onSaveClick()
                 })
             }
         }

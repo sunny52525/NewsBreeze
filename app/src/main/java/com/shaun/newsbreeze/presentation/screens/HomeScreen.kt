@@ -32,7 +32,8 @@ import com.shaun.newsbreeze.viewmodels.HomeViewModel
 fun HomeScreen(
     homeViewModel: HomeViewModel,
     onReadClicked: (Article) -> Unit,
-    onSaveClicked: (Article) -> Unit
+    onSaveClicked: (Article) -> Unit,
+    onDeleteClicked:(Article)->Unit
 ) {
 
     val topHeadlines: NewsArticles? by homeViewModel.newsArticles.observeAsState(NewsArticles())
@@ -88,22 +89,14 @@ fun HomeScreen(
                                     onReadClicked(item)
                                 },
                                 onSaveClick = {
-                                    homeViewModel.insertArticle(
-                                        articleLocal = ArticleLocal(
-                                            source = item.source,
-                                            author = item.author,
-                                            title = item.title,
-                                            description = item.description,
-                                            url = item.url,
-                                            urlToImage = item.urlToImage,
-                                            publishedAt = item.publishedAt, content = item.content,
-
-                                            )
-                                    )
+                                    onSaveClicked(item)
                                 },
-                                isSaved = savedArticles?.filter {
-                                    it.title == item.title
-                                }?.isEmpty() == false
+                                isSaved = savedArticles?.none { articleLocal ->
+                                    articleLocal.title == item.title
+                                } == false,
+                                onDelete = {
+                                    onDeleteClicked(item)
+                                }
                             )
                         }
 

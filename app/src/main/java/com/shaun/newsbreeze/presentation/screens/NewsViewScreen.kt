@@ -9,20 +9,30 @@ import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.shaun.newsbreeze.localdatabase.ArticleLocal
 import com.shaun.newsbreeze.models.Article
 import com.shaun.newsbreeze.presentation.components.AuthorRow
 import com.shaun.newsbreeze.presentation.components.NewsViewToolbar
 import com.shaun.newsbreeze.presentation.components.NewsViewTopSection
+import com.shaun.newsbreeze.viewmodels.HomeViewModel
 
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @Composable
-fun NewsViewScreen(article: Article?, onBackPressed: () -> Unit) {
+fun NewsViewScreen(
+    article: Article?,
+    onBackPressed: () -> Unit,
+    onSaveClicked: (Article?) -> Unit,
+    homeViewModel: HomeViewModel
+) {
+    val savedArticles: List<ArticleLocal>? by homeViewModel.savedArticles.observeAsState()
 
     Column(Modifier.fillMaxSize()) {
 
@@ -37,10 +47,15 @@ fun NewsViewScreen(article: Article?, onBackPressed: () -> Unit) {
                 stickyHeader {
                     Column {
                         Spacer(modifier = Modifier.height(20.dp))
-                        NewsViewToolbar(onSaveClick = { }) {
+                        NewsViewToolbar(onSaveClick = {
+                            onSaveClicked(article)
+                        }, isSaved = savedArticles?.none {
+                            it.title == article?.title
+                        } == false, onBackClick = {
                             onBackPressed()
-
-                        }
+                        }, onDelete = {
+                            homeViewModel.deleteArticle(article?.title.toString())
+                        })
                     }
                 }
 

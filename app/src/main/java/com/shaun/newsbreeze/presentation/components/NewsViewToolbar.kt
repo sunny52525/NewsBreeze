@@ -14,7 +14,7 @@ import com.shaun.newsbreeze.R
 
 @ExperimentalMaterialApi
 @Composable
-fun NewsViewToolbar(onSaveClick: () -> Unit, onBackClick: () -> Unit) {
+fun NewsViewToolbar(onSaveClick: () -> Unit,isSaved:Boolean ,onBackClick: () -> Unit,onDelete:()->Unit) {
 
 
     Row(
@@ -42,13 +42,18 @@ fun NewsViewToolbar(onSaveClick: () -> Unit, onBackClick: () -> Unit) {
             )
         }
         Image(
-            painter = painterResource(id = R.drawable.ic_not_saved),
+            painter = if (isSaved) painterResource(id = R.drawable.ic_saved) else painterResource(id = R.drawable.ic_not_saved),
             contentDescription = "",
             alignment = Alignment.TopCenter,
             modifier = Modifier
                 .size(32.dp)
                 .clickable {
-                    onSaveClick()
+
+                   if(isSaved)
+                   {onDelete()
+
+                   }else
+                       onSaveClick()
                 }
         )
 

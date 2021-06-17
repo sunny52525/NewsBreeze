@@ -2,6 +2,7 @@ package com.shaun.newsbreeze
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
@@ -18,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.shaun.newsbreeze.localdatabase.toArticleLocal
 import com.shaun.newsbreeze.models.Article
 import com.shaun.newsbreeze.navigation.Routes
 import com.shaun.newsbreeze.presentation.screens.HomeScreen
@@ -57,20 +59,33 @@ class MainActivity : ComponentActivity() {
                                 }
                                 navController.navigate(Routes.NewsViewScreen.route)
 
-                            }, onSaveClicked = {
-
+                            }, onSaveClicked = { item ->
+                                homeViewModel.insertArticle(
+                                    articleLocal = item.toArticleLocal()
+                                )
+                            }, onDeleteClicked = {
+                                Toast.makeText(this@MainActivity, "Unsaved", Toast.LENGTH_SHORT).show()
+                                homeViewModel.deleteArticle(it.title)
                             })
                         }
                         composable(Routes.NewsViewScreen.route) {
 
                             var article =
                                 navController.previousBackStackEntry?.arguments?.getSerializable("article") as Article
+
+
+
+
                             Log.d("TAG", "onCreate: $article")
-                          EnterAnimation {
-                              NewsViewScreen(article, onBackPressed = {
-                                  navController.popBackStack()
-                              })
-                          }
+                            EnterAnimation {
+                                NewsViewScreen(article, onBackPressed = {
+                                    navController.popBackStack()
+                                }, onSaveClicked = { item ->
+                                    homeViewModel.insertArticle(
+                                        articleLocal = item.toArticleLocal()
+                                    )
+                                }, homeViewModel)
+                            }
                         }
                     }
                 }

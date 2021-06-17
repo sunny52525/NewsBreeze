@@ -77,5 +77,8 @@ class HomeViewModel @Inject constructor(
         repository.insertArticle(articleLocal)
     }
 
+    fun deleteArticle(articleLocal: String)=viewModelScope.launch {
+        repository.deleteArticle(articleLocal)
+    }
 
 }
