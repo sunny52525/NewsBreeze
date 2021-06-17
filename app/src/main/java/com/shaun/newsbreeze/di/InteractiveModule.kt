@@ -1,6 +1,7 @@
 package com.shaun.newsbreeze.di
 
 import com.shaun.newsbreeze.network.NewsApiService
+import com.shaun.newsbreeze.repository.HomeScreenRepository
 import com.shaun.newsbreeze.repository.HomeScreenRepositoryImpl
 import dagger.Module
 import dagger.Provides
@@ -13,7 +14,8 @@ import javax.inject.Singleton
 object InteractiveModule {
     @Provides
     @Singleton
-    fun provideRepository(apiKey: String, retrofit: NewsApiService): HomeScreenRepositoryImpl {
+
+    fun provideRepository(apiKey: String, retrofit: NewsApiService):HomeScreenRepository {
         return HomeScreenRepositoryImpl(apiKey = apiKey, retrofit = retrofit)
     }
 }

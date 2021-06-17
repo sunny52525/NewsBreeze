@@ -43,7 +43,6 @@ fun SearchBar(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-
             .padding(start = 30.dp, end = 30.dp),
 
         shape = RoundedCornerShape(35)

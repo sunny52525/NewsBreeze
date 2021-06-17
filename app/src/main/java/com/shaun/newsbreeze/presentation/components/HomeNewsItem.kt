@@ -1,5 +1,6 @@
 package com.shaun.newsbreeze.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,7 @@ import com.google.accompanist.glide.rememberGlidePainter
 import com.shaun.newsbreeze.R
 import com.shaun.newsbreeze.ui.theme.LightGreen
 import com.shaun.newsbreeze.utils.AppConstants
+import kotlin.math.log
 
 
 @ExperimentalMaterialApi
@@ -30,14 +32,16 @@ import com.shaun.newsbreeze.utils.AppConstants
 fun HomeNewsItem(
     imageUrl: String = AppConstants.dummyImage,
     title: String = "Lorem ipsum dolor sit amet sectetur adi",
-    shortDescription: String = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusan ium doloremque laudan...",
+    shortDescription: String? = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusan ium doloremque laudan...",
     date: String = "29-03-01",
     isSaved: Boolean = false,
     onReadClick: () -> Unit = {},
     onSaveClick: () -> Unit = {}
 ) {
 
-    Column(
+    if (title.isEmpty() || shortDescription.isNullOrEmpty())
+        return
+     Column(
         Modifier
             .fillMaxWidth()
             .padding(start = 35.dp, end = 35.dp)
@@ -123,7 +127,7 @@ fun HomeNewsItem(
 
             )
         Text(
-            text = shortDescription,
+            text = shortDescription ?: "",
             style = MaterialTheme.typography.h6.copy(
                 color = Color.Black,
                 fontWeight = FontWeight.Normal

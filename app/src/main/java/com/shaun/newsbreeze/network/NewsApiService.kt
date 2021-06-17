@@ -12,6 +12,7 @@ interface NewsApiService {
     fun getTopHeadlines(
         @Query("country") countryCode: String = "in",
         @Query("apiKey") apiKey: String,
+        @Query("pageSize") pageSize: Int = 50
     ): Call<NewsArticles>
 
 

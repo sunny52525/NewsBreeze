@@ -6,9 +6,13 @@ import com.shaun.newsbreeze.network.NewsApiService
 import retrofit2.Call
 import retrofit2.Response
 
-class HomeScreenRepositoryImpl(val apiKey: String, val retrofit: NewsApiService) :
+class HomeScreenRepositoryImpl(
+    val apiKey: String, val retrofit: NewsApiService,
+) :
+
     HomeScreenRepository {
 
+    override var searchFailed = MutableLiveData(false)
 
     override fun getHeadlines(): MutableLiveData<NewsArticles> {
 
@@ -19,14 +23,16 @@ class HomeScreenRepositoryImpl(val apiKey: String, val retrofit: NewsApiService)
                     call: Call<NewsArticles>,
                     response: Response<NewsArticles>
                 ) {
-
                     if (response.isSuccessful) {
 
+                        if (response.body()?.articles?.isEmpty() == true)
+                            searchFailed.postValue(true)
+                        result.postValue(response.body())
                     }
                 }
 
                 override fun onFailure(call: Call<NewsArticles>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    searchFailed.postValue(true)
                 }
 
             })
@@ -35,6 +41,30 @@ class HomeScreenRepositoryImpl(val apiKey: String, val retrofit: NewsApiService)
     }
 
     override fun searchArticle(query: String): MutableLiveData<NewsArticles> {
-        TODO("Not yet implemented")
+
+        val result = MutableLiveData<NewsArticles>()
+        retrofit.searchArticles(query = query, apiKey = apiKey)
+            .enqueue(object : retrofit2.Callback<NewsArticles> {
+                override fun onResponse(
+                    call: Call<NewsArticles>,
+                    response: Response<NewsArticles>
+                ) {
+                    if (response.isSuccessful) {
+                        if (response.body()?.articles?.isEmpty() == true)
+                            searchFailed.postValue(true)
+                        result.postValue(response.body())
+                    }
+                }
+
+                override fun onFailure(call: Call<NewsArticles>, t: Throwable) {
+                    searchFailed.postValue(true)
+                }
+
+            })
+        return result
+    }
+
+    companion object {
+        private const val TAG = "HomeScreenRepositoryImp"
     }
 }
