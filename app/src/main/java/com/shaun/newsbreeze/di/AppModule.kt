@@ -18,7 +18,4 @@ object AppModule {
     fun provideApplication(@ApplicationContext app: Context): NewsBreezeApplication {
         return app as NewsBreezeApplication
     }
-    @Provides
-    @Singleton
-    fun getAPIKey() = "c5505b6406384fe2b1060c7dd66e957c"
 }

@@ -1,5 +1,6 @@
 package com.shaun.newsbreeze.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +15,7 @@ class HomeViewModel @Inject constructor(
     private val repository: HomeScreenRepository
 ) : ViewModel() {
 
-    private val _searchStringLiveData = MutableLiveData<String>(null)
+    val _searchStringLiveData = MutableLiveData("")
 
 
     val newsArticles = MutableLiveData<NewsArticles>()
@@ -26,14 +27,22 @@ class HomeViewModel @Inject constructor(
     val searchFailed = repository.searchFailed
 
     init {
-
         viewModelScope.launch {
-            val result = repository.getHeadlines()
-            newsArticles.postValue(result)
+            try {
+                val result = repository.getHeadlines()
+                newsArticles.postValue(result)
+            }catch (e:Exception){
+                Log.d("TAG", "$e: ")
+            }
             isInSearchMode.postValue(false)
         }
     }
 
+
+    fun onQuery(query: String) {
+        _searchStringLiveData.postValue(query)
+
+    }
 
     private fun resetSearchState() {
         newsArticles.value = NewsArticles()
@@ -45,14 +54,19 @@ class HomeViewModel @Inject constructor(
 
         resetSearchState()
         viewModelScope.launch {
-            val result = repository.searchArticle(query = query)
+           try {
 
-            if (result.totalResults == 0) {
-                searchFailed.postValue(true)
-            } else
-                searchFailed.postValue(false)
+               val result = repository.searchArticle(query = query)
 
-            newsArticles.postValue(result)
+               if (result.totalResults == 0) {
+                   searchFailed.postValue(true)
+               } else
+                   searchFailed.postValue(false)
+
+               newsArticles.postValue(result)
+           }catch (e:Exception){
+               Log.d("TAG", "searchNews: $e")
+           }
             isInSearchMode.postValue(false)
         }
     }

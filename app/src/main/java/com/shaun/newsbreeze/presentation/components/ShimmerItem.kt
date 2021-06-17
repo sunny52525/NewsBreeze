@@ -15,8 +15,8 @@ import com.shaun.newsbreeze.ui.theme.ShimmerColorShades
 
 
 @Composable
-fun ShimmerAnimation(
-) {
+fun shimmerAnimation(
+): Brush {
 
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
@@ -32,28 +32,32 @@ fun ShimmerAnimation(
     )
 
 
-    val brush = Brush.linearGradient(
+    return Brush.linearGradient(
         colors = ShimmerColorShades,
         start = Offset(10f, 10f),
         end = Offset(translateAnim, translateAnim)
     )
-
-    ShimmerItem(brush = brush)
 
 }
 
 
 @Composable
 fun ShimmerItem(
-    brush: Brush
+    brush: Brush = shimmerAnimation(),
+    size: Int = 250,
+    showBottomLine: Boolean = true,
+    paddingStart:Int=30,
+    paddingEnd:Int=30,
+    paddingTop:Int=20
+
 ) {
 
 
-    Column(modifier = Modifier.padding(start = 30.dp, end = 30.dp, top = 20.dp)) {
+    Column(modifier = Modifier.padding(start = paddingStart.dp, end = paddingEnd.dp, top = paddingTop.dp)) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .size(250.dp),
+                .size(size = size.dp),
             shape = RoundedCornerShape(10)
         ) {
             Column(
@@ -65,12 +69,13 @@ fun ShimmerItem(
             }
         }
 
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(30.dp)
-                .padding(vertical = 8.dp)
-                .background(brush = brush)
-        )
+        if (showBottomLine)
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+                    .padding(vertical = 8.dp)
+                    .background(brush = brush)
+            )
     }
 }

@@ -1,8 +1,8 @@
 package com.shaun.newsbreeze.presentation.components
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -20,17 +20,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.glide.rememberGlidePainter
+import com.google.accompanist.imageloading.ImageLoadState
 import com.shaun.newsbreeze.R
 import com.shaun.newsbreeze.ui.theme.LightGreen
 import com.shaun.newsbreeze.utils.AppConstants
-import kotlin.math.log
 
 
 @ExperimentalMaterialApi
 @Preview
 @Composable
 fun HomeNewsItem(
-    imageUrl: String = AppConstants.dummyImage,
+    imageUrl: String? = AppConstants.dummyImage,
     title: String = "Lorem ipsum dolor sit amet sectetur adi",
     shortDescription: String? = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusan ium doloremque laudan...",
     date: String = "29-03-01",
@@ -41,7 +41,7 @@ fun HomeNewsItem(
 
     if (title.isEmpty() || shortDescription.isNullOrEmpty())
         return
-     Column(
+    Column(
         Modifier
             .fillMaxWidth()
             .padding(start = 35.dp, end = 35.dp)
@@ -81,15 +81,41 @@ fun HomeNewsItem(
                 contentAlignment = Alignment.TopEnd,
             ) {
 
+                val painter = rememberGlidePainter(imageUrl, fadeIn = true)
 
                 Image(
-                    painter = rememberGlidePainter(request = imageUrl), contentDescription = null,
+                    painter = painter, contentDescription = null,
                     modifier = Modifier
                         .height(200.dp)
                         .fillMaxSize(1f),
                     contentScale = ContentScale.FillWidth
 
                 )
+                when (painter.loadState) {
+
+
+                    is ImageLoadState.Loading -> {
+
+                        ShimmerItem(
+                            size = 200,
+                            showBottomLine = false,
+                            paddingStart = 0,
+                            paddingEnd = 0,
+                            paddingTop = 0
+                        )
+                    }
+                    is ImageLoadState.Error -> {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.failed),
+                            null,
+                            Modifier
+                                .align(Alignment.Center)
+                                .height(200.dp)
+                                .width(300.dp)
+                        )
+                    }
+                }
 
                 Column(Modifier.padding(top = 10.dp, end = 20.dp)) {
                     Card(
@@ -131,7 +157,10 @@ fun HomeNewsItem(
             style = MaterialTheme.typography.h6.copy(
                 color = Color.Black,
                 fontWeight = FontWeight.Normal
-            )
+            ),
+            modifier = Modifier.clickable {
+                onReadClick()
+            }
         )
 
         Text(text = date, color = Color.Gray)

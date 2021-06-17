@@ -1,10 +1,7 @@
 package com.shaun.newsbreeze.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,12 +29,10 @@ fun NewsViewScreen(article: Article?, onBackPressed: () -> Unit) {
 
         Box() {
             NewsViewTopSection(
-                imageUrl = article?.urlToImage.toString(),
-                onSaveClick = { /*TODO*/ }) {
-                onBackPressed()
-            }
+                imageUrl = article?.urlToImage.toString()
+            )
 
-            LazyColumn( ) {
+            LazyColumn() {
 
                 stickyHeader {
                     Column {
@@ -51,9 +46,10 @@ fun NewsViewScreen(article: Article?, onBackPressed: () -> Unit) {
 
                 item {
                     Column {
-                        Spacer(modifier = Modifier
-                            .height(280.dp)
-                           )
+                        Spacer(
+                            modifier = Modifier
+                                .height(280.dp)
+                        )
                         Card(
                             shape = RoundedCornerShape(topEnd = 40.dp, topStart = 40.dp),
                             backgroundColor = Color.White,

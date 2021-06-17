@@ -64,7 +64,7 @@ fun HomeScreen(
         Header()
         Spacer(modifier = Modifier.height(10.dp))
 
-        SearchBar() {
+        SearchBar(homeViewModel) {
             Log.d("TAG", "HomeScreen: $it")
             homeViewModel.searchNews(it)
         }
@@ -97,7 +97,7 @@ fun HomeScreen(
                 Column {
                     repeat(4) {
                         EnterAnimation {
-                            ShimmerAnimation()
+                           ShimmerItem()
                         }
 
                     }

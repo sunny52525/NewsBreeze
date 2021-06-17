@@ -13,8 +13,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,18 +25,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.shaun.newsbreeze.R
+import com.shaun.newsbreeze.viewmodels.HomeViewModel
 
-@Preview
 @ExperimentalComposeUiApi
 @Composable
 fun SearchBar(
+    viewModel: HomeViewModel,
     onExecuteSearch: (String) -> Unit = {},
 ) {
-    val inputvalue = remember { mutableStateOf(TextFieldValue()) }
+    val inputvalue: String? by viewModel._searchStringLiveData.observeAsState(initial = "")
+
 
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -56,10 +56,9 @@ fun SearchBar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(1.dp),
-                    value = inputvalue.value,
+                    value = inputvalue ?: "",
                     onValueChange = {
-
-                        inputvalue.value = it
+                        viewModel.onQuery(it)
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
@@ -67,7 +66,7 @@ fun SearchBar(
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            onExecuteSearch(inputvalue.value.text)
+                            onExecuteSearch(inputvalue ?: "")
 //              focusManager.clearFocus(forcedClear = true) // close keyboard
                             keyboardController?.hideSoftwareKeyboard() // another way to close keyboard
                         },
