@@ -13,7 +13,7 @@ interface NewsApiService {
         @Query("country") countryCode: String = "in",
         @Query("apiKey") apiKey: String,
         @Query("pageSize") pageSize: Int = 50
-    ): Call<NewsArticles>
+    ): NewsArticles
 
 
     @GET("everything")
@@ -21,7 +21,7 @@ interface NewsApiService {
         @Query("q") query: String,
         @Query("sortBy") sortBy: String = "publishedAt",
         @Query("apiKey") apiKey: String
-    ): Call<NewsArticles>
+    ): NewsArticles
 }
 
 

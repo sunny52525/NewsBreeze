@@ -6,6 +6,6 @@ import com.shaun.newsbreeze.models.NewsArticles
 interface HomeScreenRepository {
 
     var searchFailed:MutableLiveData<Boolean>
-    fun getHeadlines():MutableLiveData<NewsArticles>
-    fun searchArticle(query: String): MutableLiveData<NewsArticles>
+   suspend fun getHeadlines(): NewsArticles
+    suspend fun searchArticle(query: String): NewsArticles
 }

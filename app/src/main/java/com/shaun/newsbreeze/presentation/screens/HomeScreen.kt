@@ -7,9 +7,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
@@ -36,17 +34,18 @@ fun HomeScreen(
     onSaveClicked: (Article) -> Unit
 ) {
 
-    val topHeadlines: NewsArticles? by homeViewModel.topHeadlines.observeAsState(NewsArticles())
+    val topHeadlines: NewsArticles? by homeViewModel.newsArticles.observeAsState(NewsArticles())
 
     val noItemsFound: Boolean by homeViewModel.searchFailed.observeAsState(false)
 
+    val isLoading: Boolean by homeViewModel.isInSearchMode.observeAsState(initial = true)
     homeViewModel.searchFailed.observeForever {
         Log.d("TAG", "HomeScreen: $it")
         homeViewModel.isInSearchMode.postValue(!it)
 
     }
 
-    homeViewModel.topHeadlines.observeForever {
+    homeViewModel.newsArticles.observeForever {
         if (it.articles.isNotEmpty()) {
             homeViewModel.isInSearchMode.postValue(false)
         }
@@ -54,62 +53,61 @@ fun HomeScreen(
 
     Log.d("TAG", "HomeScreen: ${topHeadlines?.totalResults}")
 
-    LazyColumn(
+    Column(
         Modifier
             .fillMaxSize()
             .background(BackgroundColorBreeze)
     ) {
 
 
-        item {
-            Spacer(modifier = Modifier.height(50.dp))
-            Header()
-            Spacer(modifier = Modifier.height(10.dp))
-        }
-        stickyHeader {
-            SearchBar() {
-                Log.d("TAG", "HomeScreen: $it")
-                homeViewModel.searchNews(it)
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-        }
+        Spacer(modifier = Modifier.height(50.dp))
+        Header()
+        Spacer(modifier = Modifier.height(10.dp))
 
-        if (noItemsFound) {
-            item { NotFoundScreen() }
-        } else
-            if (homeViewModel.isInSearchMode.value == true|| topHeadlines?.totalResults!! <=0) {
-                topHeadlines?.totalResults?.let {
-                    if (it > 2) {
-                        homeViewModel.isInSearchMode.postValue(false)
+        SearchBar() {
+            Log.d("TAG", "HomeScreen: $it")
+            homeViewModel.searchNews(it)
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+
+
+        Box {
+            LazyColumn() {
+                topHeadlines?.let {
+                    itemsIndexed(it.articles) { index, item ->
+
+                        EnterAnimation {
+                            HomeNewsItem(
+                                title = item.title,
+                                shortDescription = item.description,
+                                imageUrl = item.urlToImage,
+                                date = item.publishedAt.substring(0, 10),
+                                onReadClick = {
+                                    onReadClicked(item)
+                                }
+                            )
+                        }
+
                     }
-                }
 
-                repeat(4) {
-                    item {
+                }
+            }
+
+            if (isLoading) {
+                Column {
+                    repeat(4) {
                         EnterAnimation {
                             ShimmerAnimation()
                         }
+
                     }
                 }
-            }
-        else
-        topHeadlines?.let {
-            itemsIndexed(it.articles) { index, item ->
-
-                    EnterAnimation {
-                        HomeNewsItem(
-                            title = item.title,
-                            shortDescription = item.description,
-                            imageUrl = item.urlToImage,
-                            date = item.publishedAt.substring(0, 10),
-                            onReadClick = {
-                                onReadClicked(item)
-                            }
-                        )
-                    }
 
             }
 
+            if (noItemsFound) {
+                NotFoundScreen()
+            }
         }
     }
 }
