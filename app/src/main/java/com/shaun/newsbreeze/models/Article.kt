@@ -1,5 +1,8 @@
 package com.shaun.newsbreeze.models
 
+import android.os.Parcelable
+import java.io.Serializable
+
 data class Article(
     val source: Source,
     val author: String,
@@ -11,3 +14,4 @@ data class Article(
     val content: String,
 
     )
+    :Serializable

@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.shaun.newsbreeze.models.Article
 import com.shaun.newsbreeze.models.NewsArticles
 import com.shaun.newsbreeze.presentation.components.*
 import com.shaun.newsbreeze.ui.theme.BackgroundColorBreeze
@@ -28,26 +30,30 @@ import com.shaun.newsbreeze.viewmodels.HomeViewModel
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel) {
+fun HomeScreen(
+    homeViewModel: HomeViewModel,
+    onReadClicked: (Article) -> Unit,
+    onSaveClicked: (Article) -> Unit
+) {
 
-    val topHeadlines: NewsArticles? by homeViewModel.onHomeScreen.observeAsState(NewsArticles())
+    val topHeadlines: NewsArticles? by homeViewModel.topHeadlines.observeAsState(NewsArticles())
 
-    val noItemsFound :Boolean by homeViewModel.searchFailed.observeAsState(false)
+    val noItemsFound: Boolean by homeViewModel.searchFailed.observeAsState(false)
 
     homeViewModel.searchFailed.observeForever {
         Log.d("TAG", "HomeScreen: $it")
-        if (it) {
-            homeViewModel.isInSearchMode.postValue(false)
-        }
+        homeViewModel.isInSearchMode.postValue(!it)
+
     }
 
-    homeViewModel.onHomeScreen.observeForever {
+    homeViewModel.topHeadlines.observeForever {
         if (it.articles.isNotEmpty()) {
             homeViewModel.isInSearchMode.postValue(false)
         }
     }
 
     Log.d("TAG", "HomeScreen: ${topHeadlines?.totalResults}")
+
     LazyColumn(
         Modifier
             .fillMaxSize()
@@ -71,7 +77,13 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
         if (noItemsFound) {
             item { NotFoundScreen() }
         } else
-            if (homeViewModel.isInSearchMode.value == true)
+            if (homeViewModel.isInSearchMode.value == true|| topHeadlines?.totalResults!! <=0) {
+                topHeadlines?.totalResults?.let {
+                    if (it > 2) {
+                        homeViewModel.isInSearchMode.postValue(false)
+                    }
+                }
+
                 repeat(4) {
                     item {
                         EnterAnimation {
@@ -79,29 +91,26 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                         }
                     }
                 }
-            else
-                topHeadlines?.let {
-                    itemsIndexed(it.articles) { index, item ->
-                        if (index <= 2)
-                            EnterAnimation {
-                                HomeNewsItem(
-                                    title = item.title,
-                                    shortDescription = item.description,
-                                    imageUrl = item.urlToImage,
-                                    date = item.publishedAt
-                                )
+            }
+        else
+        topHeadlines?.let {
+            itemsIndexed(it.articles) { index, item ->
+
+                    EnterAnimation {
+                        HomeNewsItem(
+                            title = item.title,
+                            shortDescription = item.description,
+                            imageUrl = item.urlToImage,
+                            date = item.publishedAt.substring(0, 10),
+                            onReadClick = {
+                                onReadClicked(item)
                             }
-                        else {
-                            HomeNewsItem(
-                                title = item.title,
-                                shortDescription = item.description,
-                                imageUrl = item.urlToImage,
-                                date = item.publishedAt
-                            )
-                        }
+                        )
                     }
 
-                }
+            }
+
+        }
     }
 }
 

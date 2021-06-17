@@ -11,7 +11,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,12 +20,12 @@ import com.shaun.newsbreeze.ui.theme.LightGreen
 @Composable
 fun BreezeButton(
     title: String = "Read",
-    onClick: (Unit) -> Unit = {},
+    onClick: () -> Unit = {},
     background: Color = LightGreen
 ) {
 
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { onClick() },
         shape = RoundedCornerShape(15),
         modifier = Modifier
             .width(120.dp)

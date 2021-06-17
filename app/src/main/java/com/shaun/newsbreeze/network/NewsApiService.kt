@@ -9,7 +9,7 @@ interface NewsApiService {
 
 
     @GET("top-headlines")
-    fun getTopHeadlines(
+    suspend fun getTopHeadlines(
         @Query("country") countryCode: String = "in",
         @Query("apiKey") apiKey: String,
         @Query("pageSize") pageSize: Int = 50
@@ -17,7 +17,7 @@ interface NewsApiService {
 
 
     @GET("everything")
-    fun searchArticles(
+    suspend fun searchArticles(
         @Query("q") query: String,
         @Query("sortBy") sortBy: String = "publishedAt",
         @Query("apiKey") apiKey: String

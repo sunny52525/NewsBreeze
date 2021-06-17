@@ -3,6 +3,8 @@ package com.shaun.newsbreeze.presentation.components
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -48,14 +50,20 @@ fun ShimmerItem(
 
 
     Column(modifier = Modifier.padding(start = 30.dp, end = 30.dp, top = 20.dp)) {
-        Spacer(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .size(250.dp)
-                .background(
-                    brush = brush
-                )
-        )
+                .size(250.dp),
+            shape = RoundedCornerShape(10)
+        ) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(brush = brush)
+            ) {
+
+            }
+        }
 
         Spacer(
             modifier = Modifier
