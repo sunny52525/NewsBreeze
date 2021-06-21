@@ -4,7 +4,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shaun.newsbreeze.localdatabase.ArticleCache
 import com.shaun.newsbreeze.localdatabase.ArticleLocal
+import com.shaun.newsbreeze.localdatabase.toArticle
+import com.shaun.newsbreeze.models.Article
 import com.shaun.newsbreeze.models.NewsArticles
 import com.shaun.newsbreeze.repository.HomeScreenRepository
 import com.shaun.newsbreeze.utils.AppConstants
@@ -14,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: HomeScreenRepository
+    private val repository: HomeScreenRepository,
+    private val hasInternet: Boolean
 ) : ViewModel() {
 
     val searchStringLiveData = MutableLiveData("")
@@ -22,7 +26,7 @@ class HomeViewModel @Inject constructor(
 
 
     val savedArticles = repository.getArticle()
-    val newsArticles = MutableLiveData<NewsArticles>()
+    val newsArticles = MutableLiveData<List<Article>>()
 
 
     val isInSearchMode = MutableLiveData(true)
@@ -32,8 +36,21 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             try {
-                val result = repository.getHeadlines()
-                newsArticles.postValue(result)
+                if (hasInternet) {
+
+                    val result: NewsArticles = repository.getHeadlines()
+                    newsArticles.postValue(result.articles)
+
+                } else {
+                    val result: List<ArticleCache> = repository.getCache()
+                    Log.d(TAG, "${result}: ")
+                    newsArticles.postValue(
+                        result
+                            ?.map { it.toArticle() }
+                    )
+
+
+                }
             } catch (e: Exception) {
                 Log.d("TAG", "$e: ")
             }
@@ -48,19 +65,19 @@ class HomeViewModel @Inject constructor(
         if (query == AppConstants.SORT_ITEMS[0]) {
 
 
-            val articles = newsArticles.value?.articles?.sortedBy {
+            val articles = newsArticles.value?.sortedBy {
                 it.publishedAt.substring(8, 10)
             }?.reversed()
 
 
-            newsArticles.postValue(articles?.let { NewsArticles(articles = it) })
+            newsArticles.postValue(articles)
 
         } else {
-            val articles = newsArticles.value?.articles?.sortedBy {
+            val articles = newsArticles.value?.sortedBy {
                 it.title
             }
 
-            newsArticles.postValue(articles?.let { NewsArticles(articles = it) })
+            newsArticles.postValue(articles)
 
 
         }
@@ -74,7 +91,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun resetSearchState() {
-        newsArticles.value = NewsArticles()
+        newsArticles.value = listOf()
     }
 
     fun searchNews(query: String) {
@@ -92,7 +109,7 @@ class HomeViewModel @Inject constructor(
                 } else
                     searchFailed.postValue(false)
 
-                newsArticles.postValue(result)
+                newsArticles.postValue(result.articles)
             } catch (e: Exception) {
                 Log.d("TAG", "searchNews: $e")
             }
@@ -107,6 +124,10 @@ class HomeViewModel @Inject constructor(
 
     fun deleteArticle(articleLocal: String) = viewModelScope.launch {
         repository.deleteArticle(articleLocal)
+    }
+
+    companion object {
+        private const val TAG = "HomeViewModel"
     }
 
 }

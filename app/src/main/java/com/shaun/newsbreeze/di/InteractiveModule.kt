@@ -16,7 +16,7 @@ object InteractiveModule {
     @Provides
     @Singleton
 
-    fun provideRepository(apiKey: String, retrofit: NewsApiService,dao: ArticleDao):HomeScreenRepository {
-        return HomeScreenRepositoryImpl(apiKey = apiKey, retrofit = retrofit,dao)
+    fun provideRepository(apiKey: String, retrofit: NewsApiService,dao: ArticleDao,hasInternet:Boolean):HomeScreenRepository {
+        return HomeScreenRepositoryImpl(apiKey = apiKey, retrofit = retrofit,dao,hasInternet)
     }
 }

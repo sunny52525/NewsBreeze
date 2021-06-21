@@ -7,3 +7,5 @@ data class NewsArticles(
     var articles: List<Article> = arrayListOf()
 
 )
+
+

@@ -70,7 +70,7 @@ fun LibraryBottomSheet(
 
         Text(
             text = "Cancel",
-            color = Color.Green,
+            color = LightGreen,
             style = MaterialTheme.typography.body1,
             modifier = Modifier
                 .clickable {
@@ -87,7 +87,6 @@ fun LibraryBottomSheet(
 }
 
 
-@Preview
 @Composable
 fun SortItemRow(
     modifier: Modifier = Modifier,

@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.shaun.newsbreeze.localdatabase.ArticleLocal
 import com.shaun.newsbreeze.models.Article
-import com.shaun.newsbreeze.models.NewsArticles
 import com.shaun.newsbreeze.presentation.components.*
 import com.shaun.newsbreeze.ui.theme.BackgroundColorBreeze
 import com.shaun.newsbreeze.viewmodels.HomeViewModel
@@ -37,7 +36,7 @@ fun HomeScreen(
     openSave: () -> Unit
 ) {
 
-    val topHeadlines: NewsArticles? by homeViewModel.newsArticles.observeAsState(NewsArticles())
+    val topHeadlines: List<Article>? by homeViewModel.newsArticles.observeAsState(listOf())
 
     val savedArticles: List<ArticleLocal>? by homeViewModel.savedArticles.observeAsState()
     val noItemsFound: Boolean by homeViewModel.searchFailed.observeAsState(false)
@@ -50,7 +49,7 @@ fun HomeScreen(
     }
 
     homeViewModel.newsArticles.observeForever {
-        if (it.articles.isNotEmpty()) {
+        if (it?.isNotEmpty() == true) {
             homeViewModel.isInSearchMode.postValue(false)
         }
     }
@@ -99,7 +98,7 @@ fun HomeScreen(
             Box {
                 LazyColumn() {
                     topHeadlines?.let {
-                        itemsIndexed(it.articles) { index, item ->
+                        itemsIndexed(it) { index, item ->
 
                             EnterAnimation {
                                 HomeNewsItem(
