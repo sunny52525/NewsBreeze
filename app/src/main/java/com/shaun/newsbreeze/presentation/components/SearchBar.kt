@@ -19,7 +19,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -34,11 +33,11 @@ import com.shaun.newsbreeze.viewmodels.HomeViewModel
 fun SearchBar(
     viewModel: HomeViewModel,
     onExecuteSearch: (String) -> Unit = {},
-) {
+
+    ) {
     val inputvalue: String? by viewModel.searchStringLiveData.observeAsState(initial = "")
 
 
-    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     Card(
         modifier = Modifier

@@ -74,8 +74,13 @@ fun NewsViewScreen(
                             AuthorRow(
                                 author = article?.author ?: "null",
                                 source = article?.source?.name ?: "null",
-                                imageUrl = article?.urlToImage ?: ""
-                            ) {
+                                imageUrl = article?.urlToImage ?: "",
+                                isSaved = (savedArticles?.none {
+                                    it.title == article?.title
+                                } == false), onSaveClick = {
+                                    onSaveClicked(article)
+                                }) {
+                                homeViewModel.deleteArticle(articleLocal = article?.title.toString())
                             }
 
                         }
@@ -91,10 +96,15 @@ fun NewsViewScreen(
                             .background(Color.White)
                             .padding(20.dp)
                     ) {
+                        Text(
+                            text = article?.title.toString(),
+                            fontSize = 35.sp,
+                            fontFamily = FontFamily.Serif
+                        )
 
                         Text(
                             text = article?.content.toString(),
-                            fontSize = 35.sp,
+                            fontSize = 25.sp,
                             fontFamily = FontFamily.Serif
                         )
 

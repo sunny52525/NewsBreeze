@@ -33,7 +33,8 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
     onReadClicked: (Article) -> Unit,
     onSaveClicked: (Article) -> Unit,
-    onDeleteClicked:(Article)->Unit
+    onDeleteClicked: (Article) -> Unit,
+    openSave: () -> Unit
 ) {
 
     val topHeadlines: NewsArticles? by homeViewModel.newsArticles.observeAsState(NewsArticles())
@@ -54,7 +55,6 @@ fun HomeScreen(
         }
     }
 
-    Log.d("TAG", "HomeScreen: ${topHeadlines?.totalResults}")
 
     Column(
         Modifier
@@ -64,7 +64,9 @@ fun HomeScreen(
 
 
         Spacer(modifier = Modifier.height(50.dp))
-        Header()
+        Header(openSave = {
+            openSave()
+        })
         Spacer(modifier = Modifier.height(10.dp))
 
         SearchBar(homeViewModel) {

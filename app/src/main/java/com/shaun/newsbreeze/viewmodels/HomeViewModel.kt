@@ -17,11 +17,12 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     val searchStringLiveData = MutableLiveData("")
+    val savedSearchStringLiveData = MutableLiveData("")
+
 
     val savedArticles = repository.getArticle()
     val newsArticles = MutableLiveData<NewsArticles>()
 
-    val searchQuery = MutableLiveData("")
 
     val isInSearchMode = MutableLiveData(true)
 
@@ -37,11 +38,18 @@ class HomeViewModel @Inject constructor(
             }
             isInSearchMode.postValue(false)
         }
+
+
     }
 
 
-    fun onQuery(query: String) {
-        searchStringLiveData.postValue(query)
+
+
+
+
+    fun onQuery(query: String ) {
+
+            searchStringLiveData.postValue(query)
 
     }
 
@@ -77,7 +85,7 @@ class HomeViewModel @Inject constructor(
         repository.insertArticle(articleLocal)
     }
 
-    fun deleteArticle(articleLocal: String)=viewModelScope.launch {
+    fun deleteArticle(articleLocal: String) = viewModelScope.launch {
         repository.deleteArticle(articleLocal)
     }
 

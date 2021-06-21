@@ -3,6 +3,7 @@ package com.shaun.newsbreeze.localdatabase
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.shaun.newsbreeze.models.Article
 import com.shaun.newsbreeze.models.Source
 
 
@@ -20,3 +21,17 @@ data class ArticleLocal(
     val id: Int? = null
 
 )
+
+
+fun ArticleLocal.toArticle(): Article {
+    return Article(
+        source ?: Source("0", "null"),
+        author.toString(),
+        title.toString(),
+        description.toString(),
+        url.toString(),
+        urlToImage.toString(),
+        publishedAt.toString(),
+        content.toString()
+    )
+}

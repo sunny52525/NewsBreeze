@@ -20,9 +20,9 @@ import com.shaun.newsbreeze.ui.theme.HeadingFont
 import com.shaun.newsbreeze.ui.theme.LightGreen
 
 @ExperimentalMaterialApi
-@Preview
+
 @Composable
-fun Header() {
+fun Header(openSave:()->Unit) {
 
     Row(
         Modifier
@@ -39,7 +39,7 @@ fun Header() {
 
             )
         Card(
-            onClick = { },
+            onClick = {openSave() },
             modifier = Modifier
                 .size(30.dp),
             shape = RoundedCornerShape(10),

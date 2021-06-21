@@ -24,6 +24,7 @@ import com.shaun.newsbreeze.models.Article
 import com.shaun.newsbreeze.navigation.Routes
 import com.shaun.newsbreeze.presentation.screens.HomeScreen
 import com.shaun.newsbreeze.presentation.screens.NewsViewScreen
+import com.shaun.newsbreeze.presentation.screens.SavedArticles
 import com.shaun.newsbreeze.ui.theme.NewsBreezeTheme
 import com.shaun.newsbreeze.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,17 +65,18 @@ class MainActivity : ComponentActivity() {
                                     articleLocal = item.toArticleLocal()
                                 )
                             }, onDeleteClicked = {
-                                Toast.makeText(this@MainActivity, "Unsaved", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@MainActivity, "Unsaved", Toast.LENGTH_SHORT)
+                                    .show()
                                 homeViewModel.deleteArticle(it.title)
+                            }, openSave = {
+                                navController.navigate(Routes.SavedScreen.route)
                             })
                         }
+
                         composable(Routes.NewsViewScreen.route) {
 
-                            var article =
+                            val article =
                                 navController.previousBackStackEntry?.arguments?.getSerializable("article") as Article
-
-
-
 
                             Log.d("TAG", "onCreate: $article")
                             EnterAnimation {
@@ -85,6 +87,21 @@ class MainActivity : ComponentActivity() {
                                         articleLocal = item.toArticleLocal()
                                     )
                                 }, homeViewModel)
+                            }
+                        }
+
+                        composable(Routes.SavedScreen.route) {
+                            EnterAnimation {
+                                SavedArticles(homeViewModel, onBackClicked = {
+                                    navController.popBackStack()
+                                }) { article ->
+                                    navController.currentBackStackEntry?.arguments =
+                                        Bundle().apply {
+                                            putSerializable("article", article)
+                                        }
+                                    navController.navigate(Routes.NewsViewScreen.route)
+
+                                }
                             }
                         }
                     }

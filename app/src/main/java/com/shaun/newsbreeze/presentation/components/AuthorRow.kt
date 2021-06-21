@@ -17,8 +17,14 @@ fun AuthorRow(
     imageUrl: String = AppConstants.dummyImage,
     author: String,
     source: String,
-    onSaveClick: () -> Unit
+    onSaveClick: () -> Unit,
+    isSaved: Boolean,
+    onDeleteClicked: () -> Unit
+
 ) {
+
+    val buttonTitle = if (isSaved) "Unsave" else "Save"
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -27,7 +33,7 @@ fun AuthorRow(
             .padding(start = 30.dp, end = 30.dp),
     ) {
 
-        Row( verticalAlignment = Alignment.CenterVertically,) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = rememberGlidePainter(request = imageUrl),
                 contentDescription = null,
@@ -41,8 +47,11 @@ fun AuthorRow(
             }
         }
 
-        BreezeButton(title = "Save", onClick = {
-            onSaveClick()
+        BreezeButton(title = buttonTitle, onClick = {
+            if (isSaved)
+                onDeleteClicked()
+            else
+                onSaveClick()
         })
     }
 }
