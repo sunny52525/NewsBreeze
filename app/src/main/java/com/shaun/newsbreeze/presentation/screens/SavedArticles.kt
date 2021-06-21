@@ -5,8 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -15,10 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.shaun.newsbreeze.localdatabase.ArticleLocal
 import com.shaun.newsbreeze.models.Article
-import com.shaun.newsbreeze.presentation.components.HeaderSavedScreen
-import com.shaun.newsbreeze.presentation.components.SavedItem
-import com.shaun.newsbreeze.presentation.components.SavedToolbar
-import com.shaun.newsbreeze.presentation.components.SearchBar
+import com.shaun.newsbreeze.presentation.components.*
 import com.shaun.newsbreeze.ui.theme.BackgroundColorBreeze
 import com.shaun.newsbreeze.viewmodels.HomeViewModel
 import java.text.DateFormat
@@ -34,6 +30,7 @@ fun SavedArticles(
     onArticleClicked: (Article) -> Unit
 ) {
 
+
     val data: List<ArticleLocal?> by viewModel.savedArticles.observeAsState(initial = listOf())
 
     var filter by remember {
@@ -47,7 +44,9 @@ fun SavedArticles(
             onBackClicked()
         })
         Spacer(modifier = Modifier.height(20.dp))
-        SearchBar(viewModel) {
+        SearchBar(viewModel, onSort = {
+
+        }) {
             viewModel.searchNews(it)
             onBackClicked()
         }

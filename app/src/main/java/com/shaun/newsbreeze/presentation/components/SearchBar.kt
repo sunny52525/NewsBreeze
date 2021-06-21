@@ -1,10 +1,8 @@
 package com.shaun.newsbreeze.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -32,6 +30,7 @@ import com.shaun.newsbreeze.viewmodels.HomeViewModel
 @Composable
 fun SearchBar(
     viewModel: HomeViewModel,
+    onSort: () -> Unit = {},
     onExecuteSearch: (String) -> Unit = {},
 
     ) {
@@ -86,7 +85,12 @@ fun SearchBar(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_sort),
                             contentDescription = "Search Icon",
-                            Modifier.alpha(.5f), tint = Color.LightGray
+                            Modifier
+                                .alpha(.5f)
+                                .clickable {
+                                    onSort()
+                                }
+                                .size(30.dp), tint = Color.LightGray
                         )
                     },
                     shape = CircleShape

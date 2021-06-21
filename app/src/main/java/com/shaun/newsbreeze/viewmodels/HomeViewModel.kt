@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.shaun.newsbreeze.localdatabase.ArticleLocal
 import com.shaun.newsbreeze.models.NewsArticles
 import com.shaun.newsbreeze.repository.HomeScreenRepository
+import com.shaun.newsbreeze.utils.AppConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,13 +44,32 @@ class HomeViewModel @Inject constructor(
     }
 
 
+    fun sort(query: String) {
+        if (query == AppConstants.SORT_ITEMS[0]) {
 
 
+            val articles = newsArticles.value?.articles?.sortedBy {
+                it.publishedAt.substring(8, 10)
+            }?.reversed()
 
 
-    fun onQuery(query: String ) {
+            newsArticles.postValue(articles?.let { NewsArticles(articles = it) })
 
-            searchStringLiveData.postValue(query)
+        } else {
+            val articles = newsArticles.value?.articles?.sortedBy {
+                it.title
+            }
+
+            newsArticles.postValue(articles?.let { NewsArticles(articles = it) })
+
+
+        }
+    }
+
+
+    fun onQuery(query: String) {
+
+        searchStringLiveData.postValue(query)
 
     }
 

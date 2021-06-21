@@ -10,9 +10,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -23,6 +22,7 @@ import com.shaun.newsbreeze.models.NewsArticles
 import com.shaun.newsbreeze.presentation.components.*
 import com.shaun.newsbreeze.ui.theme.BackgroundColorBreeze
 import com.shaun.newsbreeze.viewmodels.HomeViewModel
+import kotlinx.coroutines.launch
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
@@ -54,73 +54,94 @@ fun HomeScreen(
             homeViewModel.isInSearchMode.postValue(false)
         }
     }
+    val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val scope = rememberCoroutineScope()
+    var currentSort by remember {
+        mutableStateOf("Date")
+    }
+    ModalBottomSheetLayout(
+        sheetContent = {
+            LibraryBottomSheet(state, scope, currentSort, onSortItemClicked = {
+                currentSort = it
+
+                homeViewModel.sort(it)
+            })
+        },
+        sheetState = state,
+        scrimColor = MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
+    )
+    {
+
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(BackgroundColorBreeze)
+        ) {
 
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(BackgroundColorBreeze)
-    ) {
+            Spacer(modifier = Modifier.height(50.dp))
+            Header(openSave = {
+                openSave()
+            })
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SearchBar(homeViewModel, onSort = {
+                scope.launch {
+                    state.show()
+                }
+            }) {
+                Log.d("TAG", "HomeScreen: $it")
+                homeViewModel.searchNews(it)
+            }
+            Spacer(modifier = Modifier.height(20.dp))
 
 
-        Spacer(modifier = Modifier.height(50.dp))
-        Header(openSave = {
-            openSave()
-        })
-        Spacer(modifier = Modifier.height(10.dp))
+            Box {
+                LazyColumn() {
+                    topHeadlines?.let {
+                        itemsIndexed(it.articles) { index, item ->
 
-        SearchBar(homeViewModel) {
-            Log.d("TAG", "HomeScreen: $it")
-            homeViewModel.searchNews(it)
-        }
-        Spacer(modifier = Modifier.height(20.dp))
+                            EnterAnimation {
+                                HomeNewsItem(
+                                    title = item.title,
+                                    shortDescription = item.description,
+                                    imageUrl = item.urlToImage,
+                                    date = item.publishedAt.substring(0, 10),
+                                    onReadClick = {
+                                        onReadClicked(item)
+                                    },
+                                    onSaveClick = {
+                                        onSaveClicked(item)
+                                    },
+                                    isSaved = savedArticles?.none { articleLocal ->
+                                        articleLocal.title == item.title
+                                    } == false,
+                                    onDelete = {
+                                        onDeleteClicked(item)
+                                    }
+                                )
+                            }
 
-
-        Box {
-            LazyColumn() {
-                topHeadlines?.let {
-                    itemsIndexed(it.articles) { index, item ->
-
-                        EnterAnimation {
-                            HomeNewsItem(
-                                title = item.title,
-                                shortDescription = item.description,
-                                imageUrl = item.urlToImage,
-                                date = item.publishedAt.substring(0, 10),
-                                onReadClick = {
-                                    onReadClicked(item)
-                                },
-                                onSaveClick = {
-                                    onSaveClicked(item)
-                                },
-                                isSaved = savedArticles?.none { articleLocal ->
-                                    articleLocal.title == item.title
-                                } == false,
-                                onDelete = {
-                                    onDeleteClicked(item)
-                                }
-                            )
                         }
 
                     }
-
                 }
-            }
 
-            if (isLoading) {
-                Column {
-                    repeat(4) {
-                        EnterAnimation {
-                            ShimmerItem()
+                if (isLoading) {
+                    Column {
+                        repeat(4) {
+                            EnterAnimation {
+                                ShimmerItem()
+                            }
+
                         }
-
                     }
+
                 }
 
-            }
-
-            if (noItemsFound) {
-                NotFoundScreen()
+                if (noItemsFound) {
+                    NotFoundScreen()
+                }
             }
         }
     }
